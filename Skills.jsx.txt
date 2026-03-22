@@ -1,0 +1,24 @@
+import { useEffect, useState } from "react";
+import { API } from "../api";
+
+export default function Skills() {
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    API.get("/skills/public").then((res) => setSkills(res.data));
+  }, []);
+
+  return (
+    <section className="page">
+      <h1>My Skills</h1>
+      <div className="card-grid">
+        {skills.map((skill) => (
+          <div className="card" key={skill._id}>
+            <h3>{skill.title}</h3>
+            <p>{skill.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

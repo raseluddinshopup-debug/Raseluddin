@@ -1,0 +1,19 @@
+import { useEffect, useState } from "react";
+import { API } from "../api";
+
+export default function About() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    API.get("/content/public").then((res) => setContent(res.data));
+  }, []);
+
+  if (!content) return <div className="page">Loading...</div>;
+
+  return (
+    <section className="page">
+      <h1>{content.aboutTitle}</h1>
+      <p>{content.aboutText}</p>
+    </section>
+  );
+}

@@ -1,0 +1,44 @@
+import { useEffect, useState } from "react";
+import AdminLayout from "../components/AdminLayout";
+import { API, authHeader } from "../api";
+
+export default function SiteEditor() {
+  const [form, setForm] = useState({});
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    API.get("/content/admin", authHeader()).then((res) => setForm(res.data));
+  }, []);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await API.put("/content/admin", form, authHeader());
+    setMsg(res.data.message);
+  };
+
+  return (
+    <AdminLayout title="Site Editor">
+      <form className="editor-form" onSubmit={handleSubmit}>
+        <input name="siteTitle" placeholder="Site Title" value={form.siteTitle || ""} onChange={handleChange} />
+        <input name="logoText" placeholder="Logo Text" value={form.logoText || ""} onChange={handleChange} />
+        <input name="heroTitle" placeholder="Hero Title" value={form.heroTitle || ""} onChange={handleChange} />
+        <textarea name="heroSubtitle" placeholder="Hero Subtitle" value={form.heroSubtitle || ""} onChange={handleChange} />
+        <input name="heroImage" placeholder="Hero Image URL" value={form.heroImage || ""} onChange={handleChange} />
+        <input name="aboutTitle" placeholder="About Title" value={form.aboutTitle || ""} onChange={handleChange} />
+        <textarea name="aboutText" placeholder="About Text" value={form.aboutText || ""} onChange={handleChange} />
+        <input name="contactEmail" placeholder="Contact Email" value={form.contactEmail || ""} onChange={handleChange} />
+        <input name="contactPhone" placeholder="Contact Phone" value={form.contactPhone || ""} onChange={handleChange} />
+        <input name="facebook" placeholder="Facebook Link" value={form.facebook || ""} onChange={handleChange} />
+        <input name="github" placeholder="GitHub Link" value={form.github || ""} onChange={handleChange} />
+        <input name="linkedin" placeholder="LinkedIn Link" value={form.linkedin || ""} onChange={handleChange} />
+        <input name="footerText" placeholder="Footer Text" value={form.footerText || ""} onChange={handleChange} />
+        <button type="submit">Save Changes</button>
+        {msg && <p className="success">{msg}</p>}
+      </form>
+    </AdminLayout>
+  );
+}

@@ -1,0 +1,73 @@
+import { useEffect, useState } from "react";
+import AdminLayout from "../components/AdminLayout";
+import { API, authHeader } from "../api";
+
+export default function ManageProjects() {
+  const [projects, setProjects] = useState([]);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    image: "",
+    liveLink: ""
+  });
+
+  const loadProjects = async () => {
+    const res = await API.get("/projects/admin", authHeader());
+    setProjects(res.data);
+  };
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const addProject = async (e) => {
+    e.preventDefault();
+    await API.post("/projects/admin", form, authHeader());
+    setForm({ title: "", description: "", image: "", liveLink: "" });
+    loadProjects();
+  };
+
+  const removeProject = async (id) => {
+    await API.delete(`/projects/admin/${id}`, authHeader());
+    loadProjects();
+  };
+
+  return (
+    <AdminLayout title="Manage Projects">
+      <form className="editor-form" onSubmit={addProject}>
+        <input
+          placeholder="Project Title"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+        <textarea
+          placeholder="Project Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+        <input
+          placeholder="Image URL"
+          value={form.image}
+          onChange={(e) => setForm({ ...form, image: e.target.value })}
+        />
+        <input
+          placeholder="Live Link"
+          value={form.liveLink}
+          onChange={(e) => setForm({ ...form, liveLink: e.target.value })}
+        />
+        <button type="submit">Add Project</button>
+      </form>
+
+      <div className="card-grid">
+        {projects.map((project) => (
+          <div className="card" key={project._id}>
+            <img src={project.image} alt={project.title} className="project-image" />
+            <h3>{project.title}</h3>
+            <p>{project.description}</p>
+            <button onClick={() => removeProject(project._id)}>Delete</button>
+          </div>
+        ))}
+      </div>
+    </AdminLayout>
+  );
+}

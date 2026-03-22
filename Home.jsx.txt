@@ -1,0 +1,22 @@
+import { useEffect, useState } from "react";
+import { API } from "../api";
+
+export default function Home() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    API.get("/content/public").then((res) => setContent(res.data));
+  }, []);
+
+  if (!content) return <div className="page">Loading...</div>;
+
+  return (
+    <section className="page hero-page">
+      <div>
+        <h1>{content.heroTitle}</h1>
+        <p>{content.heroSubtitle}</p>
+      </div>
+      <img src={content.heroImage} alt="profile" className="hero-image" />
+    </section>
+  );
+}

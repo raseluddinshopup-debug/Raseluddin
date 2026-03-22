@@ -1,0 +1,57 @@
+import { useEffect, useState } from "react";
+import AdminLayout from "../components/AdminLayout";
+import { API, authHeader } from "../api";
+
+export default function ManageSkills() {
+  const [skills, setSkills] = useState([]);
+  const [form, setForm] = useState({ title: "", description: "" });
+
+  const loadSkills = async () => {
+    const res = await API.get("/skills/admin", authHeader());
+    setSkills(res.data);
+  };
+
+  useEffect(() => {
+    loadSkills();
+  }, []);
+
+  const addSkill = async (e) => {
+    e.preventDefault();
+    await API.post("/skills/admin", form, authHeader());
+    setForm({ title: "", description: "" });
+    loadSkills();
+  };
+
+  const removeSkill = async (id) => {
+    await API.delete(`/skills/admin/${id}`, authHeader());
+    loadSkills();
+  };
+
+  return (
+    <AdminLayout title="Manage Skills">
+      <form className="editor-form" onSubmit={addSkill}>
+        <input
+          placeholder="Skill Title"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+        <textarea
+          placeholder="Skill Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+        <button type="submit">Add Skill</button>
+      </form>
+
+      <div className="card-grid">
+        {skills.map((skill) => (
+          <div className="card" key={skill._id}>
+            <h3>{skill.title}</h3>
+            <p>{skill.description}</p>
+            <button onClick={() => removeSkill(skill._id)}>Delete</button>
+          </div>
+        ))}
+      </div>
+    </AdminLayout>
+  );
+}

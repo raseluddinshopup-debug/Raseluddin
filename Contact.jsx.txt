@@ -1,0 +1,23 @@
+import { useEffect, useState } from "react";
+import { API } from "../api";
+
+export default function Contact() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    API.get("/content/public").then((res) => setContent(res.data));
+  }, []);
+
+  if (!content) return <div className="page">Loading...</div>;
+
+  return (
+    <section className="page">
+      <h1>Contact</h1>
+      <p>Email: {content.contactEmail}</p>
+      <p>Phone: {content.contactPhone}</p>
+      <p><a href={content.facebook} target="_blank" rel="noreferrer">Facebook</a></p>
+      <p><a href={content.github} target="_blank" rel="noreferrer">GitHub</a></p>
+      <p><a href={content.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></p>
+    </section>
+  );
+}
